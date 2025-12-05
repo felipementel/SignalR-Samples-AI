@@ -11,6 +11,7 @@ public sealed class GroupHistoryStore
     {
         var chatMessages = _store.GetOrAdd(groupName, _ => InitiateChatMessages());
         chatMessages.Add(new UserChatMessage(GenerateUserChatMessage(userName, message)));
+        
         return chatMessages.AsReadOnly();
     }
 
