@@ -54,4 +54,7 @@ jobs:
 
       - name: 🧱 Build solution in Release mode
         run: |
-          dotnet build "${{ env.projectBaseDir }}/${{ env.solutionFileName }}" --configuration Release --no-restore --verbosity minimal
+          dotnet build "${{ env.projectBaseDir }}/${{ env.solutionFileName }}" \
+            --configuration Release \
+            --no-restore \
+            --verbosity minimal
