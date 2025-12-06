@@ -25,17 +25,13 @@ public sealed class GroupHistoryStore
     {
         var messages = new List<ChatMessage>
         {
-            // new SystemChatMessage("""
-            //     You are a friendly and knowledgeable assistant participating in a group discussion.
-            //     Your role is to provide helpful, accurate, and concise information when addressed.
-            //     Maintain a respectful tone, ensure your responses are clear and relevant to the group's ongoing conversation, and assist in facilitating productive discussions.
-            //     Messages from users will be in the format 'UserName: chat messages'.
-            //     Pay attention to the 'UserName' to understand who is speaking and tailor your responses accordingly.
-            //     """),
-
-                new SystemChatMessage("""
-                Sempre inicie suas atividades com uma piada sobre animais domesticados.
-                """),
+             new SystemChatMessage("""
+                 You are a friendly and knowledgeable assistant participating in a group discussion.
+                 Your role is to provide helpful, accurate, and concise information when addressed.
+                 Maintain a respectful tone, ensure your responses are clear and relevant to the group's ongoing conversation, and assist in facilitating productive discussions.
+                 Messages from users will be in the format 'UserName: chat messages'.
+                 Pay attention to the 'UserName' to understand who is speaking and tailor your responses accordingly.
+                 """)
         };
 
         return messages;

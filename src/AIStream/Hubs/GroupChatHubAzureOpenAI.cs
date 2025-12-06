@@ -48,7 +48,7 @@ public sealed class GroupChatHubAzureOpenAI : Hub
         if (message.Contains("@gpt"))
         {
             var id = Guid.NewGuid().ToString();
-            var actualMessage = message.Substring(4).Trim();
+            var actualMessage = message.Replace("@gpt", "agent").Trim();
             var messagesIncludeHistory = _history.GetOrAddGroupHistory(groupName!, userName, actualMessage);
 
             await Clients.OthersInGroup(groupName!).SendAsync("NewMessage", userName, message);
