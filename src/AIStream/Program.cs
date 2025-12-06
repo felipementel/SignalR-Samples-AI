@@ -37,6 +37,7 @@ builder.Services
 
 var app = builder.Build();
 
+
 app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
