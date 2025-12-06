@@ -8,7 +8,7 @@ var azureSignalRConnectionString = builder.Configuration["Azure:SignalR:Connecti
 // Configure SignalR with Azure SignalR Service
 if (!string.IsNullOrEmpty(azureSignalRConnectionString))
 {
-    // Usar Azure SignalR Service
+    // Using Azure SignalR Service
     builder.Services.AddSignalR(configure =>
     {
         configure.EnableDetailedErrors = true;
@@ -21,7 +21,7 @@ if (!string.IsNullOrEmpty(azureSignalRConnectionString))
 }
 else
 {
-    // Usar SignalR local (desenvolvimento)
+    // Using local SignalR local (development)
     builder.Services.AddSignalR(configure =>
     {
         configure.EnableDetailedErrors = true;
@@ -31,9 +31,13 @@ else
 
 builder.Services
     .AddSingleton<GroupAccessor>()
-    .AddSingleton<GroupHistoryStore>()
-    //.AddOpenAI(builder.Configuration) // If you want to user OpenAI, uncomment here and comment the line below
-    .AddAzureOpenAI(builder.Configuration);
+    .AddSingleton<GroupHistoryStore>();
+
+// If you want to user OpenAI, uncomment below line and comment the line after that
+//builder.Services.AddOpenAI(builder.Configuration);
+
+// Using Azure OpenAI
+builder.Services.AddAzureOpenAI(builder.Configuration);
 
 var app = builder.Build();
 
@@ -43,6 +47,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.MapHub<GroupChatHub>("/groupChat");
+// Using Azure OpenAI
+app.MapHub<GroupChatHubAzureOpenAI>("/groupChat");
+
+// If you want to user OpenAI, uncomment here and comment the line above
+//app.MapHub<GroupChatHubOpenAI>("/groupChat");
 
 await app.RunAsync();
