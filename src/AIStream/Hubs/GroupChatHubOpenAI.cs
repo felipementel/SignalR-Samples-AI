@@ -1,38 +1,28 @@
-﻿using Azure.AI.OpenAI;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using OpenAI;
-using OpenAI.Chat;
 using System.Text;
 
 namespace AIStreaming.Hubs;
 
-public sealed class GroupChatHub : Hub
+public sealed class GroupChatHubOpenAI : Hub
 {
     private readonly GroupAccessor _groupAccessor;
     private readonly GroupHistoryStore _history;
 
-    private readonly AzureOpenAIClient _azureOpenAI;
-    private readonly AzureOpenAIOptions _azureOpenAIOptions;
-
     private readonly OpenAIClient _openAI;
     private readonly OpenAIOptions _openAIOptions;
 
-    public GroupChatHub(
+    public GroupChatHubOpenAI(
         GroupAccessor groupAccessor,
         GroupHistoryStore history,
-        AzureOpenAIClient azureOpenAI,
-        //OpenAIClient openAI,
-        IOptions<AzureOpenAIOptions> azureOpenAIOptions
-        //IOptions<OpenAIOptions> openAIOptions
-        )
+        OpenAIClient openAI,
+        IOptions<OpenAIOptions> openAIOptions)
     {
         _groupAccessor = groupAccessor ?? throw new ArgumentNullException(nameof(groupAccessor));
         _history = history ?? throw new ArgumentNullException(nameof(history));
-        _azureOpenAI = azureOpenAI ?? throw new ArgumentNullException(nameof(azureOpenAI));
-        //_openAI = openAI ?? throw new ArgumentNullException(nameof(openAI));
-        _azureOpenAIOptions = azureOpenAIOptions?.Value ?? throw new ArgumentNullException(nameof(azureOpenAIOptions));
-        //_openAIOptions = openAIOptions?.Value ?? throw new ArgumentNullException(nameof(openAIOptions));
+        _openAI = openAI ?? throw new ArgumentNullException(nameof(openAI));
+        _openAIOptions = openAIOptions?.Value ?? throw new ArgumentNullException(nameof(openAIOptions));
     }
 
     public async Task JoinGroup(string groupName)
@@ -63,12 +53,7 @@ public sealed class GroupChatHub : Hub
 
             await Clients.OthersInGroup(groupName!).SendAsync("NewMessage", userName, message);
 
-            ChatClient chatClient = null;
-
-            if (!string.IsNullOrEmpty(_azureOpenAIOptions.DeploymentName))
-                chatClient = _azureOpenAI.GetChatClient(_azureOpenAIOptions.DeploymentName);
-            else
-                chatClient = _openAI.GetChatClient(_openAIOptions.Model);
+            var chatClient = _openAI.GetChatClient(_openAIOptions.Model);
 
             var totalCompletion = new StringBuilder();
             var lastSentTokenLength = 0;

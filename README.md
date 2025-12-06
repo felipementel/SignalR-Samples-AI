@@ -28,9 +28,9 @@ This sample demonstrates:
 
 ### Configuration
 
-#### Option 1: Azure OpenAI (Recommended)
+#### Option 1: Azure OpenAI (Default)
 
-1. Edit `appsettings.json` and configure the Azure OpenAI section:
+1. Configure `appsettings.json`:
 
 ```json
 {
@@ -42,13 +42,21 @@ This sample demonstrates:
 }
 ```
 
-**How to get your Azure OpenAI credentials:**
-- Follow [this guide](https://learn.microsoft.com/azure/ai-services/openai/chatgpt-quickstart?tabs=command-line%2Cpython-new&pivots=programming-language-csharp#retrieve-key-and-endpoint) to retrieve your endpoint and key
-- The `DeploymentName` is the name you gave to your model deployment in Azure OpenAI Studio
+2. In `Program.cs`, ensure these lines are **active** (default configuration):
+
+```csharp
+// Using Azure OpenAI
+builder.Services.AddAzureOpenAI(builder.Configuration);
+
+// Map Azure OpenAI Hub
+app.MapHub<GroupChatHubAzureOpenAI>("/groupChat");
+```
+
+> **Get credentials**: Follow [this guide](https://learn.microsoft.com/azure/ai-services/openai/chatgpt-quickstart?tabs=command-line%2Cpython-new&pivots=programming-language-csharp#retrieve-key-and-endpoint)
 
 #### Option 2: OpenAI
 
-1. Update `appsettings.json`:
+1. Configure `appsettings.json`:
 
 ```json
 {
@@ -60,33 +68,36 @@ This sample demonstrates:
 }
 ```
 
-2. Update `Program.cs` to use OpenAI instead of Azure OpenAI:
+2. Update `Program.cs` - comment/uncomment the following lines:
 
 ```csharp
-builder.Services.AddSingleton<GroupAccessor>()
-                .AddSingleton<GroupHistoryStore>()
-                .AddOpenAI(builder.Configuration);  // Use this instead of AddAzureOpenAI
+// Comment out Azure OpenAI:
+//builder.Services.AddAzureOpenAI(builder.Configuration);
+
+// Uncomment OpenAI:
+builder.Services.AddOpenAI(builder.Configuration);
+
+// Comment out Azure OpenAI Hub:
+//app.MapHub<GroupChatHubAzureOpenAI>("/groupChat");
+
+// Uncomment OpenAI Hub:
+app.MapHub<GroupChatHubOpenAI>("/groupChat");
 ```
 
 ### Running the Application
 
 1. Clone the repository:
-```bash
+```powershell
 git clone https://github.com/microsoft/SignalR-Samples-AI.git
 cd SignalR-Samples-AI/src/AIStream
 ```
 
-2. Restore dependencies:
-```bash
-dotnet restore
-```
-
-3. Run the project:
-```bash
+2. Run the project:
+```powershell
 dotnet run
 ```
 
-4. Open your browser and navigate to `http://localhost:5000`
+3. Open your browser and navigate to `https://localhost:5001` (or the port shown in console)
 
 ![chat sample](./images/chat.jpg)
 
@@ -96,7 +107,7 @@ dotnet run
 
 The application consists of three main components:
 - **Frontend**: HTML/JavaScript client using SignalR JavaScript library
-- **Backend**: ASP.NET Core with SignalR Hub (`GroupChatHub`)
+- **Backend**: ASP.NET Core with SignalR Hubs (`GroupChatHubAzureOpenAI` or `GroupChatHubOpenAI`)
 - **AI Service**: Azure OpenAI or OpenAI API
 
 ### 1. Group Chat
@@ -283,14 +294,14 @@ sequenceDiagram
 
 | File | Purpose |
 |------|---------|
-| `Hubs/GroupChatHub.cs` | SignalR hub handling chat and AI interactions |
+| `Hubs/GroupChatHubAzureOpenAI.cs` | SignalR hub for Azure OpenAI integration |
+| `Hubs/GroupChatHubOpenAI.cs` | SignalR hub for OpenAI integration |
 | `GroupHistoryStore.cs` | Manages conversation history per group |
 | `GroupAccessor.cs` | Tracks which connections belong to which groups |
 | `OpenAIExtensions.cs` | Configures Azure OpenAI or OpenAI clients |
+| `Program.cs` | Application startup and service configuration |
 | `wwwroot/index.html` | Frontend chat interface |
-| `wwwroot/js/scripts.js` | SignalR client connection and message handling |
-
-## Troubleshooting
+| `wwwroot/js/scripts.js` | SignalR client connection and message handling |## Troubleshooting
 
 ### Common Issues
 
